@@ -4,6 +4,9 @@ use Illuminate\View\Environment as ViewEnvironment;
 
 class BreadcrumbsManager {
 
+	protected $currentName;
+	protected $currentArgs;
+
 	protected $callbacks = array();
 
 	protected $environment;
@@ -50,11 +53,23 @@ class BreadcrumbsManager {
 		return $generator->toArray();
 	}
 
-	public function render($name)
+	public function set($name)
 	{
-		$args = array_slice(func_get_args(), 1);
+		$this->current = $name;
 
-		return $this->renderArray($name, $args);
+		$this->currentArgs = array_slice(func_get_args(), 1);
+	}
+
+	public function render($name = null)
+	{
+		if ($name)
+		{
+			$this->current = $name ?: $this->current;
+
+			$this->currentArgs = array_slice(func_get_args(), 1);
+		}
+
+		return $this->renderArray($this->current, $this->currentArgs);
 	}
 
 	public function renderArray($name, $args = array())
